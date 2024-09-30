@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Dashboard</h1>
+
+        <div class="row">
+            <!-- Левая колонка (60%) -->
+            <div class="col-md-8">
+                <h2>Списки задач</h2>
+                <a href="{% url 'tasklists:tasklist-create' %}" class="btn btn-primary mb-3">Добавить список задач</a>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Название списка задач</th>
+                            <th>Количество задач</th>
+                            <th>Завершенные задачи</th>
+                            <th>Процент завершения</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tasklist in tasklists %}
+                        <tr>
+                            <td><a href="{% url 'tasklists:list-tasks' task_list_id=tasklist.id %}">{{ tasklist.name }}</a></td>
+                            <td>{{ tasklist.total_tasks }}</td>
+                            <td>{{ tasklist.completed_tasks }}</td>
+                            <td>{{ tasklist.completion_percentage }}%</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td><strong>Итого</strong></td>
+                            <td><strong>{{ total_tasks }}</strong></td>
+                            <td><strong>{{ total_completed }}</strong></td>
+                            <td><strong>{{ overall_completion_percentage }}%</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Правая колонка (40%) -->
+            <div class="col-md-4">
+                <h2>Статус задач</h2>
+                <canvas id="statusChart" width="400" height="400"></canvas>
+
+                <h2 class="mt-4">Метрики</h2>
+                <ul>
+                    <li>Общее количество задач: {{ total_tasks }}</li>
+                    <li>Общее количество завершенных задач: {{ total_completed }}</li>
+                    <li>Общее количество списков задач: {{ total_tasklists }}</li>
+                    <li>Средний процент завершения по всем спискам: {{ overall_completion_percentage }}%</li>
+                    <li>Количество задач в процессе: {{ in_progress_tasks }}</li>
+                    <li>Количество не начатых задач: {{ not_started_tasks }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('statusChart').getContext('2d');
+        const statusChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Завершенные', 'В процессе', 'Не начаты'],
+                datasets: [{
+                    data: [{{ completed_percentage }}, {{ in_progress_percentage }}, {{ not_started_percentage }}],
+                    backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Процент задач по статусам'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

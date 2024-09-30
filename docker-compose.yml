@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: task_manager
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - pgnetwork
+
+
+
+#volumes:
+#  pgdata:
+
+networks:
+  pgnetwork:

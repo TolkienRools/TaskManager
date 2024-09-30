@@ -1,0 +1,16 @@
+{% extends 'tasks/base.html' %}
+
+{% load render_table from django_tables2 %}
+
+{% block title %}Task list{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">  <!-- Flex container for button -->
+        <a href="{% url 'tasks:task-create' %}" class="btn btn-primary">New task</a>  <!-- Button styling -->
+        <h1 class="text-center">Task list</h1>  <!-- Centered header -->
+    </div>
+    <div class="table-responsive">  <!-- Optional: makes the table responsive -->
+        {% render_table table %}
+    </div>
+</div>
+{% endblock %}
