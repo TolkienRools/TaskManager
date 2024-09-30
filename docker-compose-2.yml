@@ -5,8 +5,6 @@ services:
             context: .
             dockerfile: ./docker/task_manager/Dockerfile
         entrypoint: /app/docker/task_manager/server-entrypoint.sh
-#        volumes:
-#            - static_volume:/app/task_manager/django_static
         ports:
             - "11002:8000"
         environment:
@@ -19,14 +17,16 @@ services:
             POSTGRES_USER: user
             POSTGRES_PASSWORD: password
             POSTGRES_PORT: 5432
+
+        depends_on:
+            - db
+
     worker:
         restart: unless-stopped
         build:
             context: .
             dockerfile: ./docker/task_manager/Dockerfile
         entrypoint: /app/docker/task_manager/worker-entrypoint.sh
-#        volumes:
-#            - static_volume:/app/task_manager/django_static
         environment:
             DEBUG: "True"
             CELERY_BROKER_URL: "redis://redis:6379/0"
@@ -40,11 +40,34 @@ services:
         depends_on:
             - server
             - redis
+            - db
+
+    beat:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./docker/task_manager/Dockerfile
+        entrypoint: /app/docker/task_manager/beat-entrypoint.sh
+        environment:
+            DEBUG: "True"
+            CELERY_BROKER_URL: "redis://redis:6379/0"
+            CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+            DJANGO_DB: postgresql
+            POSTGRES_HOST: db
+            POSTGRES_NAME: task_manager
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+            POSTGRES_PORT: 5432
+        depends_on:
+            - worker
+            - redis
+
     redis:
         restart: unless-stopped
         image: redis:7.0.5-alpine
         expose:
             - 6379
+
     db:
         image: postgres
         restart: unless-stopped

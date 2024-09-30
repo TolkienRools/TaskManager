@@ -3,9 +3,9 @@ from django.db import models
 
 # Create your models here.
 
-class TaskManagerUser(AbstractUser):
-
-    bio = models.TextField(blank=True)
+# class TaskManagerUser(AbstractUser):
+#
+#     bio = models.TextField(blank=True)
 
 
 

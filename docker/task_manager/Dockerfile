@@ -23,5 +23,6 @@ ADD ./docker /app/docker
 
 RUN chmod +x /app/docker/task_manager/server-entrypoint.sh
 RUN chmod +x /app/docker/task_manager/worker-entrypoint.sh
+RUN chmod +x /app/docker/task_manager/beat-entrypoint.sh
 
 # CMD ["gunicorn", "--bind", "0.0.0.0:8000", "task_manager.wsgi:application"]
