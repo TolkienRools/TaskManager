@@ -25,11 +25,7 @@ TaskManager — это веб-приложение для управления �
 
 1. Убедитесь, что у вас установлены [Docker](https://www.docker.com/get-started) и [Docker Compose](https://docs.docker.com/compose/install/).
 
-2. Клонируйте репозиторий:
-
-   ```bash
-   git clone https://github.com/USERNAME/TaskManager.git
-   ```
+2. Клонируйте репозиторий
 3. Запустите контейнеры:
 
   ```bash
