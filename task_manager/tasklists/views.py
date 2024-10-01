@@ -1,18 +1,15 @@
 from django.views.generic import (CreateView,
-                                  UpdateView,
                                   ListView)
 
 from tasks.models import Task
-
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
-from tasklists.models import TaskList
-# from dashboards.models import Dashboard
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import TaskList
 from .forms import TaskListForm
-from .mixins import DashboardMixin
 
 
-class ListTaskView(ListView):
+class ListTaskView(LoginRequiredMixin, ListView):
+    login_url = '/login/'
     model = Task
 
     template_name = 'tasklists/tasklist.html'  # Укажите ваш шаблон
@@ -42,31 +39,14 @@ class ListTaskView(ListView):
         return context
 
 
-class CreateTaskListView(CreateView):
+class CreateTaskListView(LoginRequiredMixin, CreateView):
+    login_url = '/login/'
     model = TaskList
     form_class = TaskListForm
     template_name = 'tasklists/tasklist_form.html'  # Укажите ваш шаблон
     success_url = reverse_lazy('dashboards:dashboard-list')  # Укажите URL для перенаправления после успешного создания
 
-    # def form_valid(self, form):
-    #     # dashboard_id = self.kwargs.get('dashboard_id')
-    #     #
-    #     # dashboard = get_object_or_404(Dashboard, id=dashboard_id)
-    #     #
-    #     # tasklist = form.save(commit=False)
-    #     # tasklist.dashboard = dashboard
-    #     tasklist.save()
-    #
-    #     return super().form_valid(form)
+    def form_valid(self, form):
+        form.save(user=self.request.user)
+        return super().form_valid(form)
 
-
-# class UpdateTaskListView(DashboardMixin, UpdateView):
-#     model = TaskList
-#     form_class = TaskListForm
-#     template_name = 'tasklists/tasklist_form.html'  # Укажите ваш шаблон
-#     success_url = reverse_lazy('dashboard-list')  # Укажите URL для перенаправления после успешного обновления
-#
-#     def get_object(self, queryset=None):
-#         # Получаем объект TaskList по идентификатору
-#         tasklist_id = self.kwargs.get('pk')
-#         return get_object_or_404(TaskList, id=tasklist_id)

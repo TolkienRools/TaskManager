@@ -1,16 +1,11 @@
-from readline import set_startup_hook
-
+from django.contrib.auth.models import User
 from django.db import models
-# from dashboards.models import Dashboard
 
 # Create your models here.
 
 class TaskList(models.Model):
     name = models.CharField(max_length=50, null=False)
-    # dashboard = models.ForeignKey(Dashboard,
-    #                               on_delete=models.CASCADE,
-    #                               related_name="dashboard",
-    #                               null=True)
+    author = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name="task_lists")
 
     @property
     def total_tasks(self):

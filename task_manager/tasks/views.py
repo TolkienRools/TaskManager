@@ -3,12 +3,13 @@ from django.views.generic import (CreateView,
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 
-from tasklists.models import TaskList
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Task
 from .forms import TaskCreateUpdateForm
 
 
-class CreateTaskView(CreateView):
+class CreateTaskView(LoginRequiredMixin, CreateView):
+    login_url = '/login/'
     form_class = TaskCreateUpdateForm
     template_name = 'tasks/task_form.html'
 
@@ -25,21 +26,13 @@ class CreateTaskView(CreateView):
         return reverse_lazy('tasklists:list-tasks', kwargs={'task_list_id': task_list_id})
 
 
-class UpdateTaskView(UpdateView):
+class UpdateTaskView(LoginRequiredMixin, UpdateView):
+    login_url = '/login/'
     model = Task
     form_class = TaskCreateUpdateForm
-    # success_url = reverse_lazy('dashboards:dashboard-list')
 
     def form_valid(self, form):
-        # Сохраните задачу
         task = form.save()
-
-        # Перенаправьте на нужный URL
         return redirect(reverse('tasklists:list-tasks',
                                 kwargs={'task_list_id': task.task_list_id.id}))
 
-    # def get_success_url(self):
-    #     # Get the task_list_id from the URL kwargs
-    #     task_list_id = self.kwargs['task_list_id']
-    #     # Construct the success URL using the task_list_id
-    #     return reverse_lazy('tasklists:list-tasks', kwargs={'task_list_id': task_list_id})

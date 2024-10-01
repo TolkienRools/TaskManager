@@ -1,0 +1,16 @@
+{% extends 'tasks/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<body>
+    <form method="post" style="display: inline;">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit">Войти</button>
+    </form>
+    <a href="{% url 'my_auth:register' %}" class="btn btn-primary" style="margin-left: 10px;">Регистрация</a>
+</body>
+{% endblock %}

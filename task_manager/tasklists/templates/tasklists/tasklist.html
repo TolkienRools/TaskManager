@@ -1,23 +1,16 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Список задач</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
+{% extends 'tasks/base.html' %}
+
+{% block title %}List tasks{% endblock %}
+
+{% block content %}
     <div class="container mt-5">
         <h1 class="text-center">Список задач</h1>
 
-        <!-- Ссылка с классом кнопки -->
         <div class="mb-3 d-flex">
-        <a href="{% url 'tasks:task-create' task_list_id=task_list_id %}" class="btn btn-primary mr-5">Добавить новую задачу</a>
-        <a href="{% url 'dashboards:dashboard-list' %}" class="btn btn-primary">Назад</a>
-    </div>
+            <a href="{% url 'tasks:task-create' task_list_id=task_list_id %}" class="btn btn-primary mr-5">Добавить новую задачу</a>
+            <a href="{% url 'dashboards:dashboard-list' %}" class="btn btn-primary mr-5">Назад</a>
+        </div>
 
-        <!-- Таблица со списком задач -->
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -82,5 +75,4 @@
             });
         </script>
     </div>
-</body>
-</html>
+{% endblock %}

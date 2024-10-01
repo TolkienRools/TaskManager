@@ -23,7 +23,7 @@ class ListDashboardView(ListView):
         not_started_tasks = 0
 
         # Assuming you have a way to get tasklists, e.g., from the request or a queryset
-        tasklists = TaskList.objects.all()  # Adjust this as needed
+        tasklists = TaskList.objects.filter(author=self.request.user).all()  # Adjust this as needed
 
         for tasklist in tasklists:
             tasks = Task.objects.filter(task_list_id=tasklist.id)  # Adjust based on your model structure
@@ -49,6 +49,5 @@ class ListDashboardView(ListView):
         context['not_started_percentage'] = not_started_percentage
         context['in_progress_tasks'] = in_progress_tasks
         context['not_started_tasks'] = not_started_tasks
-        context['dashboard_id'] = 1
 
         return context

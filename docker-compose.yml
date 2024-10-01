@@ -1,23 +1,85 @@
 services:
-  db:
-    image: postgres
-    container_name: db
-    restart: always
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: task_manager
-#    volumes:
-#      - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - pgnetwork
+    server:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./docker/task_manager/Dockerfile
+        entrypoint: /app/docker/task_manager/server-entrypoint.sh
+        ports:
+            - "11002:8000"
+        environment:
+            DEBUG: "True"
+            CELERY_BROKER_URL: "redis://redis:6379/0"
+            CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+            DJANGO_DB: postgresql
+            POSTGRES_HOST: db
+            POSTGRES_NAME: task_manager
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+            POSTGRES_PORT: 5432
 
+        depends_on:
+            - db
 
+    worker:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./docker/task_manager/Dockerfile
+        entrypoint: /app/docker/task_manager/worker-entrypoint.sh
+        environment:
+            DEBUG: "True"
+            CELERY_BROKER_URL: "redis://redis:6379/0"
+            CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+            DJANGO_DB: postgresql
+            POSTGRES_HOST: db
+            POSTGRES_NAME: task_manager
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+            POSTGRES_PORT: 5432
+        depends_on:
+            - server
+            - redis
+            - db
 
-#volumes:
-#  pgdata:
+    beat:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./docker/task_manager/Dockerfile
+        entrypoint: /app/docker/task_manager/beat-entrypoint.sh
+        environment:
+            DEBUG: "True"
+            CELERY_BROKER_URL: "redis://redis:6379/0"
+            CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+            DJANGO_DB: postgresql
+            POSTGRES_HOST: db
+            POSTGRES_NAME: task_manager
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+            POSTGRES_PORT: 5432
+        depends_on:
+            - worker
+            - redis
 
-networks:
-  pgnetwork:
+    redis:
+        restart: unless-stopped
+        image: redis:7.0.5-alpine
+        expose:
+            - 6379
+
+    db:
+        image: postgres
+        restart: unless-stopped
+        volumes:
+            - postgres_data:/var/lib/postgresql/data/
+        environment:
+            POSTGRES_DB: task_manager
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+        expose:
+            - 5432
+
+volumes:
+    static_volume:
+    postgres_data:
