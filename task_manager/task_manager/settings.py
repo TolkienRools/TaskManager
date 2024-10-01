@@ -167,7 +167,7 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 CELERY_BEAT_SCHEDULE = {
     'task-reminder-emails': {
         'task': 'tasks.tasks.task_reminder_emails',
-        'schedule': crontab(hour=0, minute=0),
+        'schedule': crontab(hour=0, minute=0),  #
     },
 }
 
